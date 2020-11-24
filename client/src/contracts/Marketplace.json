@@ -8504,6 +8504,65 @@
     "version": "0.6.12+commit.27d51765.Emscripten.clang"
   },
   "networks": {
+    "5": {
+      "events": {
+        "0xb976aeccefd470f33e140ba228f02888030a51b987c21807791c1770a3bb58a5": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "name": "LogAddressBuyer",
+          "type": "event"
+        },
+        "0xc1a3dd7d3372fb5581befbfec830c5f181944d2d4a6a270427340305903f0f0b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "name": "LogAddressSeller",
+          "type": "event"
+        },
+        "0x4627c48065af2a9648cbecdd4b9da340c00e501243cd49a8a71c30c987e8b761": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogForSale",
+          "type": "event"
+        },
+        "0xe64ca8c671e48636f85f3008c1dd538e36bfa74fb6f2790b56b72fcc33b879ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSold",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x245387e1E7210A367886b24e0D814D4df4961005",
+      "transactionHash": "0x68fd042e722081d7e3862ce625b95bccff4a4511c78aedef800d1df26bf62f6e"
+    },
     "5777": {
       "events": {
         "0xb123f68b8ba02b447d91a6629e121111b7dd6061ff418a60139c8bf00522a284": {
@@ -8604,7 +8663,7 @@
     }
   },
   "schemaVersion": "3.2.5",
-  "updatedAt": "2020-11-24T15:33:47.270Z",
+  "updatedAt": "2020-11-24T15:50:44.124Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

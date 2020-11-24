@@ -6,7 +6,7 @@ import './App.css';
 import Web3 from "web3";
 import getWeb3 from "./getWeb3";
 import MarketplaceContract from "./contracts/Marketplace.json";
-import { SupplyChain } from "./abi/abi.js";
+import { MarketplaceDeployed } from "./abi/abi.js";
 
 function App() {
   // const [state, setstate] = useState(initialState)
@@ -27,7 +27,7 @@ function App() {
     const init = async () => {
       try {
         // Option 1: Ganache
-        // Get network provider and web3 instance.
+        /* // Get network provider and web3 instance.
         const web3 = await getWeb3();
 
         // Use web3 to get the user's accounts.
@@ -39,25 +39,25 @@ function App() {
         const instanceMarketplace = new web3.eth.Contract(
           MarketplaceContract.abi,
           deployedNetwork && deployedNetwork.address,
-        );
+        ); */
 
         // Option 2: Görli
         // Get the deployed Supply Chain contract
-        /* const web3 = new Web3(Web3.givenProvider);
-        const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
-        const scContract = new web3.eth.Contract(SupplyChain, contractAddress);
+        const web3 = new Web3(Web3.givenProvider);
+        const contractAddress = "0x245387e1E7210A367886b24e0D814D4df4961005";
+        const deployedContract = new web3.eth.Contract(MarketplaceDeployed, contractAddress);
 
-        const accounts = await web3.eth.getAccounts(); */
+        const accounts = await web3.eth.getAccounts();
 
         // Set web3, accounts, and contract to the state, and then proceed with an
         // example of interacting with the contract's methods.
 
         // Init state
-        const count = await instanceMarketplace/* scContract */.methods.getCount().call();
+        const count = await /* instanceMarketplace */deployedContract.methods.getCount().call();
 
         setWeb3(web3);
         setAccounts(accounts);
-        setContractMarketplace(instanceMarketplace /* scContract */);
+        setContractMarketplace(/* instanceMarketplace */deployedContract);
         setCount(count);
 
       } catch (error) {
