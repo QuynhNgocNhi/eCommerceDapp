@@ -8,16 +8,16 @@ import "../contracts/Marketplace.sol";
 
 contract MarketplaceWrapper is Marketplace{
 
-  function callAddItem(string memory name, uint price) public {
-    addItem(name, price);
+  function callAddProduct(string memory name, uint price) public {
+    addProduct(name, price);
   }
 
-  function callBuyItem(uint sku) public {
-    buyItem(sku);
+  function callBuyProduct(uint id) public {
+    buyProduct(id);
   }
 
-  function callFetchItem(uint sku) public {
-    fetchItem(sku);
+  function callFetchProduct(uint id) public {
+    fetchProduct(id);
   }
 }
 
@@ -40,33 +40,33 @@ contract TestMarketplace {
       string memory name = "Smartphone";
       uint price = 42;
 
-      MarketplaceWrapper(address(throwProxy)).callAddItem(name, price);
-      (bool resultAddedItem, ) = throwProxy.execute.gas(200000)();
-      emit LogAddedProduct(resultAddedItem);
+      MarketplaceWrapper(address(throwProxy)).callAddProduct(name, price);
+      (bool resultAddedProduct, ) = throwProxy.execute.gas(200000)();
+      emit LogAddedProduct(resultAddedProduct);
 
       // Expectations
-      uint expectedSku = 0;
+      uint expectedId = 0;
       string memory expectedName = "Smartphone";
       uint expectedPrice = 42;
 
-      MarketplaceWrapper(address(throwProxy)).callBuyItem(expectedSku);
-      (bool resultBoughtItem, ) = throwProxy.execute.gas(200000)();
-      emit LogBoughtProduct(resultBoughtItem);
+      MarketplaceWrapper(address(throwProxy)).callBuyProduct(expectedId);
+      (bool resultBoughtProduct, ) = throwProxy.execute.gas(200000)();
+      emit LogBoughtProduct(resultBoughtProduct);
 
       // Assert
-      Assert.isFalse(resultBoughtItem, "Should be false because not enough funds");
+      Assert.isFalse(resultBoughtProduct, "Should be false because not enough funds");
 
     }
 
-     function testItemNotForSale() public {
+     function testProductNotForSale() public {
       // Set up
 
       MarketplaceWrapper wrappedInstance = new MarketplaceWrapper();
       ThrowProxy throwProxy = new ThrowProxy(address(wrappedInstance));
 
       // Execute
-      // Instead of buyItem, callBuyItem from wrapper contract could be used
-      MarketplaceWrapper(address(throwProxy)).buyItem(100);
+      // Instead of buyProduct, callBuyProduct from wrapper contract could be used
+      MarketplaceWrapper(address(throwProxy)).buyProduct(100);
 
       (bool result, ) = throwProxy.execute.gas(200000)();
 
@@ -95,65 +95,54 @@ contract TestMarketplace {
         emit LogNumber(returnedCount);
 
         // assertion
-        Assert.equal(returnedCount, expectedCount, "neu initierter shop sollte noch keine items enthalten");
+        Assert.equal(returnedCount, expectedCount, "Initiated shop shouldn't have any products");
 
     }
 
-    function test_add_item_to_shop() public {
+    function test_add_product_to_shop() public {
 
-        // test der vorbedingungen
+        // Test prerequisites
         uint expectedCount = 0;
         uint returnedCount = testInstance.getCount();
-        Assert.equal(returnedCount, expectedCount, "neu initierter shop sollte noch keine items enthalten");
+        Assert.equal(returnedCount, expectedCount, "Initiated shop shouldn't have any products");
 
         // Setup
         string memory name = "iPhone";
         uint price = 0.1 ether;
 
-        // test execution
-        bool success = testInstance.addItem(name, price);
+        // Test execution
+        bool success = testInstance.addProduct(name, price);
         emit LogBool(success);
 
-        // expectation
+        // Expectation
         string memory expectedName = name;
         uint expectedPrice = price;
-        // uint expectedId = 1001;
-        uint expectedSku = 0;
+        uint expectedId = 0;
         uint expectedStateId = 0;
-        uint expectedNumberOfItems = 1;
+        uint expectedNumberOfProducts = 1;
         address expectedBuyer = address(0);
-        /* address expectedSeller = msg.sender; */
 
-        // assertion
-        uint returnedNumberOfItems = testInstance.getCount();
-        Assert.isAtLeast(returnedNumberOfItems, expectedNumberOfItems, "count muesste nach hinzufuegen grosser als 0 sein");
+        // Assertion
+        uint returnedNumberOfProducts = testInstance.getCount();
+        Assert.isAtLeast(returnedNumberOfProducts, expectedNumberOfProducts, "Count after added product should be > 0");
 
-        (string memory returnedName, uint returnedSku, uint returnedPrice,
+        (string memory returnedName, uint returnedId, uint returnedPrice,
           uint returnedState, address returnedSeller, address returnedBuyer) =
-            testInstance.fetchItem(expectedSku);
-            // Change to expectedId if id is implemented
+            testInstance.fetchProduct(expectedId);
 
         emit LogString(returnedName);
-
-        emit LogNumber(returnedSku);
+        emit LogNumber(returnedId);
         emit LogNumber(returnedPrice);
         emit LogNumber(returnedState);
-
         emit LogAddress(returnedBuyer);
         emit LogAddress(returnedSeller);
         emit LogAddress(tx.origin);
         emit LogAddress(msg.sender);
 
-        // Returned seller: 0xDb11c603d34Eb834399041dccB6FA6acE0f7A095 (always changes!)
-        // EOA that created contract: 0xAF625d9D2f53276b234C94a6a8f00452FD75AA7d
-        // Contract: 0xaCf73FB1E1f470E30981b1E3430568c6331633A1
-
-        Assert.equal(returnedName, expectedName, "falscher Name");
-        /* Assert.equal(returnedSku, expectedId, "falsche ID"); */
-        Assert.equal(returnedPrice, expectedPrice, "falscher price");
-/*         Assert.notEqual(returnedSeller, expectedSeller, "falscher seller"); */
-        Assert.equal(returnedState, expectedStateId, "falscher state");
-        Assert.isZero(returnedBuyer, "falscher buyer");
+        Assert.equal(returnedName, expectedName, "Wrong name");
+        Assert.equal(returnedPrice, expectedPrice, "Wrong price");
+        Assert.equal(returnedState, expectedStateId, "Wrong state");
+        Assert.isZero(returnedBuyer, "Wrong buyer");
     }
 
 

@@ -3,12 +3,12 @@ pragma solidity >=0.4.21 <0.7.0;
 contract Marketplace {
 
   address owner;
-  uint skuCount;
-  mapping (uint => Item) public items;
+  uint productCount;
+  mapping (uint => Product) public products;
 
-  struct Item {
+  struct Product {
+    uint id;
     string name;
-    uint sku;
     uint price;
     State state;
     address payable seller;
@@ -22,83 +22,61 @@ contract Marketplace {
     Received
   }
 
-    event LogForSale(uint sku);
-    event LogSold(uint sku);
-    event LogShipped(uint sku);
-    event LogReceived(uint sku);
-    event LogAddress(address);
+  event LogAddressSeller(address);
+  event LogAddressBuyer(address);
+  event LogForSale(uint id);
+  event LogSold(uint id);
+  event LogShipped(uint id);
+  event LogReceived(uint id);
 
-
-  modifier verifyCaller (address _address) { require (msg.sender == _address); _;}
   modifier paidEnough(uint _price) { require(msg.value >= _price); _;}
-  modifier checkValue(uint _sku) {
+  modifier checkValue(uint _id) {
     _;
-    uint _price = items[_sku].price;
+    uint _price = products[_id].price;
     uint amountToRefund = msg.value - _price;
-    items[_sku].buyer.transfer(amountToRefund);
+    products[_id].buyer.transfer(amountToRefund);
   }
 
 
-  modifier forSale(uint _sku) { require(items[_sku].state == State.ForSale && items[_sku].buyer == address(0)); _;}
-  modifier sold(uint _sku) { require(items[_sku].state == State.Sold); _;}
-  modifier shipped(uint _sku) { require(items[_sku].state == State.Shipped); _;}
-  modifier received(uint _sku) { require(items[_sku].state == State.Received); _;}
+  modifier forSale(uint _id) { require(products[_id].state == State.ForSale && products[_id].buyer == address(0)); _;}
+  modifier sold(uint _id) { require(products[_id].state == State.Sold); _;}
+  modifier shipped(uint _id) { require(products[_id].state == State.Shipped); _;}
+  modifier received(uint _id) { require(products[_id].state == State.Received); _;}
 
   constructor() public {
     owner = msg.sender;
-    skuCount = 0;
-    /* id = 1001; */
+    productCount = 0;
   }
 
-  function getCount() public returns (uint sku) {
-    return skuCount;
+  function getCount() public view returns (uint id) {
+    return productCount;
   }
 
-  function addItem(string memory _name, uint _price) public returns(bool){
-    emit LogForSale(skuCount);
-    items[skuCount] = Item({name: _name, sku: skuCount, price: _price, state: State.ForSale, seller: msg.sender, buyer: address(0)});
-    skuCount += 1;
-    /* id += 1; */
-    // Replace items[skuCount] with items[id] to use id
+  function addProduct(string memory _name, uint _price) public returns(bool){
+    emit LogForSale(productCount);
+    products[productCount] = Product({name: _name, id: productCount, price: _price, state: State.ForSale, seller: msg.sender, buyer: address(0)});
+    productCount += 1;
     return true;
   }
 
-  function buyItem(uint sku)
-    public payable forSale(sku) paidEnough(items[sku].price) checkValue(sku)
+  function buyProduct(uint id)
+    public payable forSale(id) paidEnough(products[id].price) checkValue(id)
   {
-    // set buyer as caller of transaction
-    items[sku].buyer = msg.sender;
-    // transfer money to seller (from contract)
-    items[sku].seller.transfer(items[sku].price);
-    // same as sendTransaction({from: buyer, to: seller, value: items[sku].price})
-    // set state to sold
-    items[sku].state = State.Sold;
-    emit LogSold(sku);
-    emit LogAddress(items[sku].buyer);
-    emit LogAddress(items[sku].seller);
+    products[id].buyer = msg.sender;
+    products[id].seller.transfer(products[id].price);
+    products[id].state = State.Sold;
+    emit LogSold(id);
+    emit LogAddressBuyer(products[id].buyer);
+    emit LogAddressSeller(products[id].seller);
   }
 
-  function shipItem(uint sku)
-    public sold(sku) verifyCaller(items[sku].seller)
-  {
-    items[sku].state = State.Shipped;
-    emit LogShipped(sku);
-  }
-
-  function receiveItem(uint sku)
-    public shipped(sku) verifyCaller(items[sku].buyer)
-  {
-    items[sku].state = State.Received;
-    emit LogReceived(sku);
-  }
-
-  function fetchItem(uint _sku) public view returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) {
-    name = items[_sku].name;
-    sku = items[_sku].sku;
-    price = items[_sku].price;
-    state = uint(items[_sku].state);
-    seller = items[_sku].seller;
-    buyer = items[_sku].buyer;
-    return (name, sku, price, state, seller, buyer);
+  function fetchProduct(uint _id) public view returns (string memory name, uint id, uint price, uint state, address seller, address buyer) {
+    name = products[_id].name;
+    id = products[_id].id;
+    price = products[_id].price;
+    state = uint(products[_id].state);
+    seller = products[_id].seller;
+    buyer = products[_id].buyer;
+    return (name, id, price, state, seller, buyer);
   }
 }
