@@ -17,17 +17,13 @@ contract Marketplace {
 
   enum State {
     ForSale,
-    Sold,
-    Shipped,
-    Received
+    Sold
   }
 
   event LogAddressSeller(address);
   event LogAddressBuyer(address);
   event LogForSale(uint id);
   event LogSold(uint id);
-  event LogShipped(uint id);
-  event LogReceived(uint id);
 
   modifier paidEnough(uint _price) { require(msg.value >= _price); _;}
   modifier checkValue(uint _id) {
@@ -40,8 +36,6 @@ contract Marketplace {
 
   modifier forSale(uint _id) { require(products[_id].state == State.ForSale && products[_id].buyer == address(0)); _;}
   modifier sold(uint _id) { require(products[_id].state == State.Sold); _;}
-  modifier shipped(uint _id) { require(products[_id].state == State.Shipped); _;}
-  modifier received(uint _id) { require(products[_id].state == State.Received); _;}
 
   constructor() public {
     owner = msg.sender;
