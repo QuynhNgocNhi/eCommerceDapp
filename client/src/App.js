@@ -11,7 +11,6 @@ import { SupplyChain } from "./abi/abi.js";
 function App() {
   // const [state, setstate] = useState(initialState)
   const [count, setCount] = useState(0);
-  const [product, setProduct] = useState("");
   const [lastProductsNames, setlastProductsNames] = useState([]);
   const [lastProductsPrices, setlastProductsPrices] = useState([]);
   const [lastProductsIds, setlastProductsIds] = useState([]);
@@ -29,7 +28,7 @@ function App() {
       try {
         // Option 1: Ganache
         // Get network provider and web3 instance.
-        /* const web3 = await getWeb3();
+        const web3 = await getWeb3();
 
         // Use web3 to get the user's accounts.
         const accounts = await web3.eth.getAccounts();
@@ -40,25 +39,25 @@ function App() {
         const instanceMarketplace = new web3.eth.Contract(
           MarketplaceContract.abi,
           deployedNetwork && deployedNetwork.address,
-        ); */
+        );
 
         // Option 2: Görli
         // Get the deployed Supply Chain contract
-        const web3 = new Web3(Web3.givenProvider);
+        /* const web3 = new Web3(Web3.givenProvider);
         const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
         const scContract = new web3.eth.Contract(SupplyChain, contractAddress);
 
-        const accounts = await web3.eth.getAccounts();
+        const accounts = await web3.eth.getAccounts(); */
 
         // Set web3, accounts, and contract to the state, and then proceed with an
         // example of interacting with the contract's methods.
 
         // Init state
-        const count = await /* instanceMarketplace */scContract.methods.getCount().call();
+        const count = await instanceMarketplace/* scContract */.methods.getCount().call();
 
         setWeb3(web3);
         setAccounts(accounts);
-        setContractMarketplace(/* instanceMarketplace */ scContract);
+        setContractMarketplace(instanceMarketplace /* scContract */);
         setCount(count);
 
       } catch (error) {
@@ -79,7 +78,7 @@ function App() {
     const contract = contractMarketplace;
 
     const productsObj = {
-      iPhone: Web3.utils.toWei('2', 'ether'),
+      MacBookPro: Web3.utils.toWei('2', 'ether'),
       iPad: Web3.utils.toWei('1', 'ether'),
       PlayStation: Web3.utils.toWei('2', 'ether'),
       Sonos: Web3.utils.toWei('3', 'ether')
@@ -88,10 +87,10 @@ function App() {
     const productName = Object.keys(productsObj)[Math.floor(Math.random() * Object.keys(productsObj).length)];
     const productPrice = productsObj[productName];
 
-    await contract.methods.addItem(productName, productPrice).send({from: account});
+    await contract.methods.addProduct(productName, productPrice).send({from: account});
     // Alternative with gas estimate
-    // const gas = await contract.methods.addItem(productName, productPrice).estimateGas();
-    // const post = await contract.methods.addItem(productName, productPrice).send({
+    // const gas = await contract.methods.addProduct(productName, productPrice).estimateGas();
+    // const post = await contract.methods.addProduct(productName, productPrice).send({
     //   from: account,
     //   gas,
     // });
@@ -102,31 +101,16 @@ function App() {
     t.preventDefault();
     const contract = contractMarketplace;
     // const productNumber = await contract.methods.getCount().call();
-    const numItems = await contract.methods.getCount().call();;
+    const numProducts = await contract.methods.getCount().call();;
     const numShown = 5;
 
-    for (let i = numItems - 1; i > numItems - numShown; i--) {
-      // const post = await contract.methods.fetchItem(i).call()
-      const post = await contract.methods.items(i).call()
+    for (let i = numProducts - 1; i > numProducts - numShown; i--) {
+      const post = await contract.methods.fetchProduct(i).call()
       setlastProductsNames((prevState => [...prevState, post.name]));
       setlastProductsPrices((prevState => [...prevState, post.price]));
-      setlastProductsIds((prevState => [...prevState, post.sku]));
+      setlastProductsIds((prevState => [...prevState, post.id]));
     }
   }
-
-  const showSingleProduct = async (t) => {
-    t.preventDefault();
-    const contract = contractMarketplace;
-    const productId = 22;
-    const result = await contract.methods.items(productId).call();
-
-    console.log(result.name)
-
-    for (const [key, value] of Object.entries(result)) {
-      console.log(`${key}: ${value}`);
-    }
-  }
-
 
   const handleSubmitAddItem = e => {
     alert('A product was added: ' + inputName + inputPrice);
@@ -137,10 +121,10 @@ function App() {
     const productName = inputName;
     const productPrice = Web3.utils.toWei(inputPrice, 'ether');
 
-    contract.methods.addItem(productName, productPrice).send({ from: account });
+    contract.methods.addProduct(productName, productPrice).send({ from: account });
     // Alternative with gas estimate
-    // const gas = await contract.methods.addItem(productName, productPrice).estimateGas();
-    // const post = await contract.methods.addItem(productName, productPrice).send({
+    // const gas = await contract.methods.addProduct(productName, productPrice).estimateGas();
+    // const post = await contract.methods.addProduct(productName, productPrice).send({
     //   from: account,
     //   gas,
     // });
@@ -156,7 +140,7 @@ function App() {
     const productId = inputId;
     const amount = Web3.utils.toWei(inputAmount, 'ether');
 
-    contract.methods.buyItem(productId).send({ from: account, value: amount })
+    contract.methods.buyProduct(productId).send({ from: account, value: amount })
   }
 
 
@@ -222,10 +206,6 @@ function App() {
       </Button>
 
       <p></p>
-
-      <Button size={'medium'} onClick={showSingleProduct}>
-        Show 1 product
-      </Button>
 
       <Table>
         <tbody>
