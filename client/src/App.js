@@ -6,14 +6,15 @@ import './App.css';
 import Web3 from "web3";
 import getWeb3 from "./getWeb3";
 import MarketplaceContract from "./contracts/Marketplace.json";
-import { MarketplaceDeployed } from "./abi/abi.js";
+import { MarketplaceDeployed } from "./abi/MarketplaceDeployed.js";
+import { SupplyChainDeployed } from "./abi/SupplyChainDeployed.js";
 
 function App() {
   // const [state, setstate] = useState(initialState)
   const [count, setCount] = useState(0);
-  const [lastProductsNames, setlastProductsNames] = useState([]);
-  const [lastProductsPrices, setlastProductsPrices] = useState([]);
-  const [lastProductsIds, setlastProductsIds] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [lastProductsObj, setlastProductsObj] = useState([]);
+  const [productsIndexed, setproductsIndexed] = useState([]);
   const [inputName, setInputName] = useState("");
   const [inputPrice, setInputPrice] = useState("");
   const [inputId, setInputId] = useState("");
@@ -26,9 +27,16 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        // Option 1: Ganache
-        /* // Get network provider and web3 instance.
-        const web3 = await getWeb3();
+        // To Do: Create condition between options
+        // Variable populated with Web3.givenProvider
+        // Condition check:
+          // If networkVersion 5, code option 2 below
+          // If networkVersion 5777, option 2 with updated variables
+          // Else, error
+
+          // Option 1: Ganache
+        // Get network provider and web3 instance.
+       /*  const web3 = await getWeb3();
 
         // Use web3 to get the user's accounts.
         const accounts = await web3.eth.getAccounts();
@@ -42,8 +50,12 @@ function App() {
         ); */
 
         // Option 2: Görli
-        // Get the deployed Supply Chain contract
+        // Get the deployed Marketplace contract
         const web3 = new Web3(Web3.givenProvider);
+        console.log(Web3.givenProvider)
+        // Address of deployed SupplyChain (change deplyedContract + functions)
+        // const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
+        // Address of new contract
         const contractAddress = "0x245387e1E7210A367886b24e0D814D4df4961005";
         const deployedContract = new web3.eth.Contract(MarketplaceDeployed, contractAddress);
 
@@ -100,15 +112,17 @@ function App() {
   const showProducts = async (t) => {
     t.preventDefault();
     const contract = contractMarketplace;
-    // const productNumber = await contract.methods.getCount().call();
-    const numProducts = await contract.methods.getCount().call();;
-    const numShown = 5;
+    const numProducts = await contract.methods.getCount().call();
+    // Anzahl Produkte die angezeigt wurden von numProducts abziehen
+    const numShown = 6;
+    let index = 0;
 
     for (let i = numProducts - 1; i > numProducts - numShown; i--) {
       const post = await contract.methods.fetchProduct(i).call()
-      setlastProductsNames((prevState => [...prevState, post.name]));
-      setlastProductsPrices((prevState => [...prevState, post.price]));
-      setlastProductsIds((prevState => [...prevState, post.id]));
+      setlastProductsObj((prevState => [...prevState, post]));
+      index ++
+      productsIndexed.push({index: index, id: post.id, name: post.name, price: post.price})
+      // Push post to array
     }
   }
 
@@ -139,6 +153,20 @@ function App() {
 
     const productId = inputId;
     const amount = Web3.utils.toWei(inputAmount, 'ether');
+
+    contract.methods.buyProduct(productId).send({ from: account, value: amount })
+  }
+
+
+  const buyItemDirect = (id, price) => {
+
+    const account = accounts[0]
+    const contract = contractMarketplace;
+
+    // const index = 0;
+    const productId = id /* lastProductsObj[index].id; */
+    const amount = price /* lastProductsObj[index].price; */
+    console.log(id, price)
 
     contract.methods.buyProduct(productId).send({ from: account, value: amount })
   }
@@ -210,29 +238,29 @@ function App() {
       <Table>
         <tbody>
           <tr>
-            {lastProductsIds.map(e =>
-              <td><strong>Id {e}</strong></td>
+            {productsIndexed.map(e =>
+              <td><strong>Id {e.id}</strong></td>
             )}
           </tr>
           <tr>
-            {lastProductsNames.map(e =>
-              <td>{e}</td>
+            {productsIndexed.map(e =>
+              <td>{e.name}</td>
             )}
           </tr>
           <tr>
-            {lastProductsPrices.map(e =>
-              <td>{Web3.utils.fromWei(e, 'ether')} ETH</td>
+            {productsIndexed.map(e =>
+              <td>{Web3.utils.fromWei(e.price, 'ether')} ETH</td>
             )}
           </tr>
-          {/* <tr>
-            {lastProductsNames.map(e =>
+          <tr>
+            {productsIndexed.map(e =>
               <td>
-                <Button size={'medium'} onClick={addItem}>
-                  Buy {e}
+                <Button size={'medium'}>
+                  Buy {e.index}
                 </Button>
               </td>
             )}
-          </tr> */}
+          </tr>
         </tbody>
       </Table>
 

@@ -2,7 +2,7 @@ pragma solidity >=0.4.21 <0.7.0;
 
 contract Marketplace {
 
-  address owner;
+  address payable owner;
   uint productCount;
   mapping (uint => Product) public products;
 
@@ -57,8 +57,10 @@ contract Marketplace {
     public payable forSale(id) paidEnough(products[id].price) checkValue(id)
   {
     products[id].buyer = msg.sender;
-    products[id].seller.transfer(products[id].price);
+    products[id].seller.transfer(products[id].price * 19 / 20);
     products[id].state = State.Sold;
+    owner.transfer(products[id].price / 20);
+
     emit LogSold(id);
     emit LogAddressBuyer(products[id].buyer);
     emit LogAddressSeller(products[id].seller);
