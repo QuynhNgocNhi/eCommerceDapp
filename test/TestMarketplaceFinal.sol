@@ -24,6 +24,7 @@ contract MarketplaceWrapper is Marketplace{
 contract TestMarketplace {
 
     address payable contractAdress;
+    uint public initialBalance = 5 ether;
     Marketplace testInstance;
 
     event LogAddedProduct(bool);
@@ -63,15 +64,16 @@ contract TestMarketplace {
 
       MarketplaceWrapper wrappedInstance = new MarketplaceWrapper();
       ThrowProxy throwProxy = new ThrowProxy(address(wrappedInstance));
+      uint unknownProductId = 1001;
 
       // Execute
       // Instead of buyProduct, callBuyProduct from wrapper contract could be used
-      MarketplaceWrapper(address(throwProxy)).buyProduct(100);
+      MarketplaceWrapper(address(throwProxy)).callBuyProduct(unknownProductId);
 
       (bool result, ) = throwProxy.execute.gas(200000)();
 
       // Assert
-      Assert.isFalse(result, "Should not be available anymore");
+      Assert.isFalse(result, "Should not be available");
 
     }
 
@@ -85,7 +87,7 @@ contract TestMarketplace {
     event LogBool(bool);
     event LogString(string);
 
-    function test_init_shop_count() public {
+    function testInitCount() public {
 
         // Setup
         uint expectedCount = 0;
@@ -99,7 +101,7 @@ contract TestMarketplace {
 
     }
 
-    function test_add_product_to_shop() public {
+    function testAddProduct() public {
 
         // Test prerequisites
         uint expectedCount = 0;
@@ -143,10 +145,8 @@ contract TestMarketplace {
         Assert.equal(returnedPrice, expectedPrice, "Wrong price");
         Assert.equal(returnedState, expectedStateId, "Wrong state");
         Assert.isZero(returnedBuyer, "Wrong buyer");
+
     }
-
-
-
 }
 
 // Proxy contract for testing throws
@@ -183,24 +183,4 @@ contract Thrower {
   }
 }
 
-
-
-// Helper function bytes to string
-
-/* function bytes32ToString(bytes32 x) public returns (string memory) {
-    bytes memory bytesString = new bytes(32);
-    uint charCount = 0;
-    for (uint j = 0; j < 32; j++) {
-        byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
-        if (char != 0) {
-            bytesString[charCount] = char;
-            charCount++;
-        }
-    }
-    bytes memory bytesStringTrimmed = new bytes(charCount);
-    for (uint j = 0; j < charCount; j++) {
-        bytesStringTrimmed[j] = bytesString[j];
-    }
-    return string(bytesStringTrimmed);
-} */
 
