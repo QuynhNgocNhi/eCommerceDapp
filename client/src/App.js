@@ -36,7 +36,7 @@ function App() {
 
           // Option 1: Ganache
         // Get network provider and web3 instance.
-       /*  const web3 = await getWeb3();
+        const web3 = await getWeb3();
 
         // Use web3 to get the user's accounts.
         const accounts = await web3.eth.getAccounts();
@@ -47,11 +47,11 @@ function App() {
         const instanceMarketplace = new web3.eth.Contract(
           MarketplaceContract.abi,
           deployedNetwork && deployedNetwork.address,
-        ); */
+        );
 
         // Option 2: Görli
         // Get the deployed Marketplace contract
-        const web3 = new Web3(Web3.givenProvider);
+        /* const web3 = new Web3(Web3.givenProvider);
         console.log(Web3.givenProvider)
         // Address of deployed SupplyChain (change deplyedContract + functions)
         // const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
@@ -60,16 +60,16 @@ function App() {
         const deployedContract = new web3.eth.Contract(MarketplaceDeployed, contractAddress);
 
         const accounts = await web3.eth.getAccounts();
-
+ */
         // Set web3, accounts, and contract to the state, and then proceed with an
         // example of interacting with the contract's methods.
 
         // Init state
-        const count = await /* instanceMarketplace */deployedContract.methods.getCount().call();
+        const count = await instanceMarketplace/* deployedContract */.methods.getCount().call();
 
         setWeb3(web3);
         setAccounts(accounts);
-        setContractMarketplace(/* instanceMarketplace */deployedContract);
+        setContractMarketplace(instanceMarketplace/* deployedContract */);
         setCount(count);
 
       } catch (error) {

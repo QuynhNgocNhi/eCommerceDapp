@@ -1,5 +1,7 @@
 pragma solidity >=0.4.21 <0.7.0;
 
+import "./SafeMath.sol";
+
 contract Marketplace {
 
   address payable owner;
@@ -53,13 +55,17 @@ contract Marketplace {
     return true;
   }
 
+  using SafeMath for uint;
+
   function buyProduct(uint id)
     public payable forSale(id) paidEnough(products[id].price) checkValue(id)
   {
     products[id].buyer = msg.sender;
-    products[id].seller.transfer(products[id].price * 19 / 20);
+    uint commission = SafeMath.div(products[id].price, 20);
+    uint shareSeller = SafeMath.sub(products[id].price, commission);
+    products[id].seller.transfer(shareSeller);
     products[id].state = State.Sold;
-    owner.transfer(products[id].price / 20);
+    owner.transfer(commission);
 
     emit LogSold(id);
     emit LogAddressBuyer(products[id].buyer);
