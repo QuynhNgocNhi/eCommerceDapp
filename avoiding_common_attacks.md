@@ -6,7 +6,7 @@ It was ensured that logic that changes state variables happens before ether is s
 Moreover, the built-in `transfer` function is used, which only sends 2300 gas and thus isn't enough for the destination address/contract to reenter.
 
 ## Arithmetic Under-/Overflow Prevention
-Standard math operators were replaced with corresponding functions from OpenZeppelin's `SafeMath` library. This was required to guard against under-/overflow vulnerabilities. Particularly, in calculating the `seller's share` and the `owner's commission`.
+Standard math operators were replaced with corresponding functions from OpenZeppelin's `SafeMath` library. This was required to guard against under-/overflow vulnerabilities. Particularly, in calculating the *seller's share* and the *owner's commission*.
 
 ## Denial of Service (DoS) Prevention
 Several modifiers were implemented to ensure that functions throw an exception or revert. Thus the DoS attack surface is reduced. A few examples are `onlyOwner`, `paidEnough` and `forSale`.
