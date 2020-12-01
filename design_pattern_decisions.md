@@ -1,4 +1,4 @@
-## Design Pattern Best Practices
+# Design Pattern Best Practices
 The following patterns were taken into account in the design of the Marketplace smart contract.
 
 ## Fail Early and Fail Loud
