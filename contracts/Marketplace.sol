@@ -57,6 +57,10 @@ contract Marketplace {
     return productCount;
   }
 
+  function getContractStatus() public view returns (bool) {
+    return isActive;
+  }
+
   function addProduct(string memory _name, uint _price) contractIsActive() public returns(bool) {
     emit LogForSale(productCount);
     products[productCount] = Product({name: _name, id: productCount, price: _price, state: State.ForSale, seller: msg.sender, buyer: address(0)});
@@ -72,8 +76,8 @@ contract Marketplace {
     products[id].buyer = msg.sender;
     uint commission = SafeMath.div(products[id].price, 20);
     uint shareSeller = SafeMath.sub(products[id].price, commission);
-    products[id].seller.transfer(shareSeller);
     products[id].state = State.Sold;
+    products[id].seller.transfer(shareSeller);
     owner.transfer(commission);
 
     emit LogSold(id);

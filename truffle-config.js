@@ -25,7 +25,7 @@ module.exports = {
       port: 7545,
       network_id: 5777
     },
-    goerli: {
+    görli: {
       provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraKey}`),
       network_id: 5,       // Görli's id
       gas: 5500000,

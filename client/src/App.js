@@ -7,7 +7,7 @@ import Web3 from "web3";
 import getWeb3 from "./getWeb3";
 import MarketplaceContract from "./contracts/Marketplace.json";
 import { MarketplaceDeployed } from "./abi/MarketplaceDeployed.js";
-import { SupplyChainDeployed } from "./abi/SupplyChainDeployed.js";
+// import { contracts_build_directory } from "../../truffle-config";
 
 function App() {
   // const [state, setstate] = useState(initialState)
@@ -22,6 +22,7 @@ function App() {
   const [web3, setWeb3] = useState(undefined);
   const [contractMarketplace, setContractMarketplace] = useState("");
   const [accounts, setAccounts] = useState([]);
+  const [isActive, setIsActive] = useState("");
 
   // Comment option 1 or 2, then set corresponding address
   useEffect(() => {
@@ -53,7 +54,7 @@ function App() {
         // Get the deployed Marketplace contract
         /* const web3 = new Web3(Web3.givenProvider);
         console.log(Web3.givenProvider)
-        // Address of deployed SupplyChain (change deplyedContract + functions)
+        // Address of deployed old contract (change deployedContract + functions)
         // const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
         // Address of new contract
         const contractAddress = "0x245387e1E7210A367886b24e0D814D4df4961005";
@@ -66,11 +67,13 @@ function App() {
 
         // Init state
         const count = await instanceMarketplace/* deployedContract */.methods.getCount().call();
+        const status = await instanceMarketplace/* deployedContract */.methods.getContractStatus().call();
 
         setWeb3(web3);
         setAccounts(accounts);
         setContractMarketplace(instanceMarketplace/* deployedContract */);
         setCount(count);
+        setIsActive(status);
 
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -114,7 +117,7 @@ function App() {
     const contract = contractMarketplace;
     const numProducts = await contract.methods.getCount().call();
     // Anzahl Produkte die angezeigt wurden von numProducts abziehen
-    const numShown = 6;
+    const numShown = 5;
     let index = 0;
 
     for (let i = numProducts - 1; i > numProducts - numShown; i--) {
@@ -172,6 +175,30 @@ function App() {
   }
 
 
+  const showStatus = async (e) => {
+    e.preventDefault();
+    const contract = contractMarketplace;
+    const status = await contract.methods.getContractStatus().call();
+    console.log(status);
+    setIsActive(status);
+  }
+
+  const toggleCircuitBreaker = (e) => {
+    e.preventDefault();
+    alert('Contract will be paused if initiated by owner');
+    const account = accounts[0]
+    const contract = contractMarketplace;
+    contract.methods.toggleCircuitBreaker().send({from: account});
+  }
+
+  const killSwitch = (e) => {
+    e.preventDefault();
+    alert('Contract will be killed if initiated by owner');
+    const account = accounts[0]
+    const contract = contractMarketplace;
+    contract.methods.kill().send({ from: account });
+  }
+
   const handleInputName = e => {
     setInputName(e.target.value);
     validateInput(e);
@@ -209,6 +236,7 @@ function App() {
       <p>Contract: <strong> Marketplace </strong> </p>
       {/* {contractMarketplace.options.address} */}
       <p>Connected account: <strong> {accounts} </strong> </p>
+      <p>Marketplace is active: <strong> {String(isActive)} </strong> </p>
       <p>Products online: <strong> {count} </strong> </p>
 
       <Flex justifyContent='center'>
@@ -227,10 +255,22 @@ function App() {
         Add random product
       </Button>
 
+      <Button size={'medium'} variant="success" onClick={showProducts}>
+        Show last products
+      </Button>
+
       <p></p>
 
-      <Button size={'medium'} onClick={showProducts}>
-        Show last products
+      <Button size={'medium'} variant="danger" onClick={toggleCircuitBreaker}>
+        Toggle circuit breaker
+      </Button>
+
+      <Button size={'medium'} variant="success" onClick={showStatus}>
+        Show marketplace status
+      </Button>
+
+      <Button size={'small'} variant="danger" onClick={killSwitch}>
+        Kill switch
       </Button>
 
       <p></p>
