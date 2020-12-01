@@ -28,6 +28,7 @@ contract Marketplace {
   event LogForSale(uint id);
   event LogSold(uint id);
 
+  modifier onlyOwner() {require(owner == msg.sender); _;}
   modifier contractIsActive() { require(isActive == true); _;}
   modifier paidEnough(uint _price) { require(msg.value >= _price); _;}
   modifier checkValue(uint _id) {
@@ -44,9 +45,12 @@ contract Marketplace {
     productCount = 0;
   }
 
-  function toggleCircuitBreaker() external {
-      require(owner == msg.sender);
+  function toggleCircuitBreaker() external onlyOwner() {
       isActive = !isActive;
+  }
+
+  function kill() external onlyOwner() {
+      selfdestruct(owner);
   }
 
   function getCount() public view returns (uint id) {
