@@ -1,4 +1,4 @@
-## Security Best Practices
+# Security Best Practices
 The following preventative techniques were implemented to ensure that the contracts are not susceptible to common attacks.
 
 ## Reentrancy Prevention
