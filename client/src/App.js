@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Form, Input, Button, Flex, MetaMaskButton, Table } from "rimble-ui";
+import { Box, Form, Input, Button, Flex, MetaMaskButton, Table, Card, Heading, Text } from "rimble-ui";
 import logo from './logo.png';
 import './App.css';
 import Web3 from "web3";
@@ -204,76 +204,86 @@ function App() {
       <p>Marketplace is open: <strong> {String(isActive)} </strong> </p>
       <p>Products online: <strong> {count} </strong> </p>
 
-      <Flex justifyContent='center'>
-        <Box>
-          <Form onSubmit={handleSubmitAddItem}>
-            <Input type="text" placeholder="Enter product name" value={inputName} onChange={handleInputName} required={true} />
-            <Input type="text" placeholder="Enter price in ETH" value={inputPrice} onChange={handleInputPrice} required={true} />
-            <Input type="submit" value="Add product" />
-          </Form>
-        </Box>
-      </Flex>
 
-      <p></p>
 
-      <Button size={'medium'} onClick={addItem}>
-        Add random product
-      </Button>
+      <Box width={[1, 1, 1]} mt={20}>
+        <Form onSubmit={handleSubmitAddItem}>
+          <Input type="text" placeholder="Enter product name" value={inputName} onChange={handleInputName} required={true} />
+          <Input type="text" placeholder="Enter price in ETH" value={inputPrice} onChange={handleInputPrice} required={true} />
+          <Input type="submit" value="Add custom product" color="green" />
+        </Form>
+      </Box>
 
-      <Button size={'medium'} variant="success" onClick={showProducts}>
-        Show new products
-      </Button>
+      <div>
+        <Button size={'medium'} onClick={addItem} mt={20}>
+          Add random product
+        </Button>
+      </div>
 
-      <p></p>
+      <div>
+        <Button size={'medium'} variant="success" onClick={showProducts} mt={20}>
+          Show new products
+        </Button>
+      </div>
 
-      <Button size={'medium'} variant="danger" onClick={toggleCircuitBreaker}>
-        Toggle circuit breaker
-      </Button>
+      <Box /* bg="grey" */ color="white" fontSize={4} p={4}>
 
-      <Button size={'medium'} variant="danger" onClick={killSwitch}>
-        Kill switch
-      </Button>
+        <Table>
+          <tbody>
+            <tr>
+              {productsIndexed.map(e =>
+                <td><strong>Id {e.id}</strong></td>
+                )}
+            </tr>
+            <tr>
+              {productsIndexed.map(e =>
+                <td>{e.name}</td>
+                )}
+            </tr>
+            <tr>
+              {productsIndexed.map(e =>
+                <td>{Web3.utils.fromWei(e.price, 'ether')} ETH</td>
+                )}
+            </tr>
+            <tr>
+              {productsIndexed.map(e =>
+                <td>
+                  <Button size={'medium'}>
+                    Buy {e.index}
+                  </Button>
+                </td>
+              )}
+            </tr>
+          </tbody>
+        </Table>
 
-      <p></p>
-
-      <Table>
-        <tbody>
-          <tr>
-            {productsIndexed.map(e =>
-              <td><strong>Id {e.id}</strong></td>
-            )}
-          </tr>
-          <tr>
-            {productsIndexed.map(e =>
-              <td>{e.name}</td>
-            )}
-          </tr>
-          <tr>
-            {productsIndexed.map(e =>
-              <td>{Web3.utils.fromWei(e.price, 'ether')} ETH</td>
-            )}
-          </tr>
-          <tr>
-            {productsIndexed.map(e =>
-              <td>
-                <Button size={'medium'}>
-                  Buy {e.index}
-                </Button>
-              </td>
-            )}
-          </tr>
-        </tbody>
-      </Table>
-
-      <Flex justifyContent='center'>
-        <Box>
           <Form onSubmit={handleSubmitBuyItem}>
             <Input type="text" placeholder="Enter product id" value={inputId} onChange={handleInputId} required={true} />
             <Input type="text" placeholder="Enter amount in ETH" value={inputAmount} onChange={handleInputAmount} required={true} />
-            <Input type="submit" value="Buy product" />
+            <Input type="submit" value="Buy selected product" color="blue"/>
           </Form>
-        </Box>
-      </Flex>
+
+      </Box>
+
+      <Box width={[1, 2, 0.2]} mt={20}>
+        <Card width={"auto"} maxWidth={"420px"} mx={"auto"} px={[3, 3, 4]}>
+          <Heading>Admin Functions</Heading>
+
+          <Box>
+            <Text mb={4}>
+              Only accessible to the owner of the smart contract. Use with care!
+            </Text>
+          </Box>
+
+          <Button variant="danger" onClick={toggleCircuitBreaker} width={[1, "auto", "auto"]} mr={3}>
+            Pause
+          </Button>
+
+          <Button.Outline variant="danger" onClick={killSwitch} width={[1, "auto", "auto"]} mt={[2, 0, 0]}>
+            Kill
+          </Button.Outline>
+        </Card>
+      </Box>
 
     </div>
     );
