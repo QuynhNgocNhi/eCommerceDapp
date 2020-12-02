@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Form, Input, Select, Field, Button, Text, Checkbox, Radio, Flex, Card, Icon, MetaMaskButton, Image, Heading, Table } from "rimble-ui";
-// import { useWeb3Context } from 'web3-react'
+import { Box, Form, Input, Button, Flex, MetaMaskButton, Table } from "rimble-ui";
 import logo from './logo.png';
 import './App.css';
 import Web3 from "web3";
@@ -19,8 +18,8 @@ function App() {
   const [inputPrice, setInputPrice] = useState("");
   const [inputId, setInputId] = useState("");
   const [inputAmount, setInputAmount] = useState("");
-  const [web3, setWeb3] = useState(undefined);
-  const [contractMarketplace, setContractMarketplace] = useState("");
+  const [networkId, setNetworkId] = useState("");
+  const [contract, setContract] = useState("");
   const [accounts, setAccounts] = useState([]);
   const [isActive, setIsActive] = useState("");
 
@@ -28,52 +27,27 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        // To Do: Create condition between options
-        // Variable populated with Web3.givenProvider
-        // Condition check:
-          // If networkVersion 5, code option 2 below
-          // If networkVersion 5777, option 2 with updated variables
-          // Else, error
-
-          // Option 1: Ganache
         // Get network provider and web3 instance.
         const web3 = await getWeb3();
-
         // Use web3 to get the user's accounts.
         const accounts = await web3.eth.getAccounts();
-
         // Get the Marketplace contract instance.
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = MarketplaceContract.networks[networkId];
-        const instanceMarketplace = new web3.eth.Contract(
+        const contract = new web3.eth.Contract(
           MarketplaceContract.abi,
           deployedNetwork && deployedNetwork.address,
         );
 
-        // Option 2: Görli
-        // Get the deployed Marketplace contract
-        /* const web3 = new Web3(Web3.givenProvider);
-        console.log(Web3.givenProvider)
-        // Address of deployed old contract (change deployedContract + functions)
-        // const contractAddress = "0xA05De8c36234Fb74a0FD6f216a3568dbBe5400Eb";
-        // Address of new contract
-        const contractAddress = "0x245387e1E7210A367886b24e0D814D4df4961005";
-        const deployedContract = new web3.eth.Contract(MarketplaceDeployed, contractAddress);
-
-        const accounts = await web3.eth.getAccounts();
- */
-        // Set web3, accounts, and contract to the state, and then proceed with an
-        // example of interacting with the contract's methods.
-
         // Init state
-        const count = await instanceMarketplace/* deployedContract */.methods.getCount().call();
-        const status = await instanceMarketplace/* deployedContract */.methods.getContractStatus().call();
+        const count = await contract.methods.getCount().call();
+        const status = await contract.methods.getContractStatus().call();
 
-        setWeb3(web3);
         setAccounts(accounts);
-        setContractMarketplace(instanceMarketplace/* deployedContract */);
+        setContract(contract);
         setCount(count);
         setIsActive(status);
+        setNetworkId(networkId);
 
       } catch (error) {
         // Catch any errors for any of the above operations.
@@ -84,13 +58,11 @@ function App() {
       }
     }
     init();
-  }, []);
-
+  }, [accounts]);
 
   const addItem = async (t) => {
     t.preventDefault();
     const account = accounts[0];
-    const contract = contractMarketplace;
 
     const productsObj = {
       MacBookPro: Web3.utils.toWei('2', 'ether'),
@@ -109,12 +81,12 @@ function App() {
     //   from: account,
     //   gas,
     // });
+    window.location.reload();
   };
 
 
   const showProducts = async (t) => {
-    t.preventDefault();
-    const contract = contractMarketplace;
+    // t.preventDefault();
     const numProducts = await contract.methods.getCount().call();
     // Anzahl Produkte die angezeigt wurden von numProducts abziehen
     const numShown = 5;
@@ -129,30 +101,28 @@ function App() {
     }
   }
 
-  const handleSubmitAddItem = e => {
+  const handleSubmitAddItem = async (e) => {
     alert('A product was added: ' + inputName + inputPrice);
 
     e.preventDefault();
     const account = accounts[0]
-    const contract = contractMarketplace;
     const productName = inputName;
     const productPrice = Web3.utils.toWei(inputPrice, 'ether');
 
-    contract.methods.addProduct(productName, productPrice).send({ from: account });
+    await contract.methods.addProduct(productName, productPrice).send({ from: account });
     // Alternative with gas estimate
     // const gas = await contract.methods.addProduct(productName, productPrice).estimateGas();
     // const post = await contract.methods.addProduct(productName, productPrice).send({
     //   from: account,
     //   gas,
     // });
-
+    showProducts();
   }
 
   const handleSubmitBuyItem = e => {
     alert('Id of product to be purchased: ' + inputId);
     e.preventDefault();
     const account = accounts[0]
-    const contract = contractMarketplace;
 
     const productId = inputId;
     const amount = Web3.utils.toWei(inputAmount, 'ether');
@@ -164,7 +134,6 @@ function App() {
   const buyItemDirect = (id, price) => {
 
     const account = accounts[0]
-    const contract = contractMarketplace;
 
     // const index = 0;
     const productId = id /* lastProductsObj[index].id; */
@@ -174,28 +143,18 @@ function App() {
     contract.methods.buyProduct(productId).send({ from: account, value: amount })
   }
 
-
-  const showStatus = async (e) => {
-    e.preventDefault();
-    const contract = contractMarketplace;
-    const status = await contract.methods.getContractStatus().call();
-    console.log(status);
-    setIsActive(status);
-  }
-
-  const toggleCircuitBreaker = (e) => {
+  const toggleCircuitBreaker = async (e) => {
     e.preventDefault();
     alert('Contract will be paused if initiated by owner');
     const account = accounts[0]
-    const contract = contractMarketplace;
-    contract.methods.toggleCircuitBreaker().send({from: account});
+    await contract.methods.toggleCircuitBreaker().send({from: account});
+    window.location.reload();
   }
 
   const killSwitch = (e) => {
     e.preventDefault();
     alert('Contract will be killed if initiated by owner');
     const account = accounts[0]
-    const contract = contractMarketplace;
     contract.methods.kill().send({ from: account });
   }
 
@@ -223,20 +182,26 @@ function App() {
     e.target.parentNode.classList.add("was-validated");
   };
 
+
+  const connectMetamask = async (e) => {
+    e.preventDefault();
+    await window.ethereum.enable();
+    window.location.reload();
+  }
+
   return (
     <div className="App">
       <div className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1>Marketplace Dapp</h1>
+        <h1>Marketplace DApp</h1>
         <p>A decentralized marketplace powered by Ethereum</p>
-        <MetaMaskButton.Outline size={'medium'}>Connect with MetaMask</MetaMaskButton.Outline>
+        <MetaMaskButton.Outline size={'medium'} onClick={connectMetamask}>Connect with MetaMask</MetaMaskButton.Outline>
       </div>
 
-      <h2>Smart Contract Tests</h2>
-      <p>Contract: <strong> Marketplace </strong> </p>
-      {/* {contractMarketplace.options.address} */}
+      <h2>Smart Contract Interaction</h2>
       <p>Connected account: <strong> {accounts} </strong> </p>
-      <p>Marketplace is active: <strong> {String(isActive)} </strong> </p>
+      <p>Current network id: <strong> {networkId} </strong> </p>
+      <p>Marketplace is open: <strong> {String(isActive)} </strong> </p>
       <p>Products online: <strong> {count} </strong> </p>
 
       <Flex justifyContent='center'>
@@ -256,7 +221,7 @@ function App() {
       </Button>
 
       <Button size={'medium'} variant="success" onClick={showProducts}>
-        Show last products
+        Show new products
       </Button>
 
       <p></p>
@@ -265,11 +230,7 @@ function App() {
         Toggle circuit breaker
       </Button>
 
-      <Button size={'medium'} variant="success" onClick={showStatus}>
-        Show marketplace status
-      </Button>
-
-      <Button size={'small'} variant="danger" onClick={killSwitch}>
+      <Button size={'medium'} variant="danger" onClick={killSwitch}>
         Kill switch
       </Button>
 
