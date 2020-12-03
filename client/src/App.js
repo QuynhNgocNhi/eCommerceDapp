@@ -13,7 +13,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [index, setIndex] = useState(0);
   const [lastProductsObj, setlastProductsObj] = useState([]);
-  const [productsIndexed, setproductsIndexed] = useState([]);
+  const [productsIndexed, setProductsIndexed] = useState([]);
   const [inputName, setInputName] = useState("");
   const [inputPrice, setInputPrice] = useState("");
   const [inputId, setInputId] = useState("");
@@ -52,7 +52,7 @@ function App() {
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
-          `Failed to load web3, accounts, or contract. Check console for details.`,
+          `Failed to load web3, accounts, or contract. Be sure to be on network id 5 or 5777.`,
         );
         console.error(error);
       }
@@ -88,9 +88,10 @@ function App() {
   const showProducts = async (t) => {
     // t.preventDefault();
     const numProducts = await contract.methods.getCount().call();
-    // Anzahl Produkte die angezeigt wurden von numProducts abziehen
     const numShown = 5;
     let index = 0;
+    productsIndexed.length = 0;
+    lastProductsObj.length = 0;
 
     for (let i = numProducts - 1; i > numProducts - numShown; i--) {
       const post = await contract.methods.fetchProduct(i).call()
@@ -119,7 +120,7 @@ function App() {
     showProducts();
   }
 
-  const handleSubmitBuyItem = e => {
+  const handleSubmitBuyItem = async e => {
     alert('Id of product to be purchased: ' + inputId);
     e.preventDefault();
     const account = accounts[0]
@@ -127,7 +128,8 @@ function App() {
     const productId = inputId;
     const amount = Web3.utils.toWei(inputAmount, 'ether');
 
-    contract.methods.buyProduct(productId).send({ from: account, value: amount })
+    await contract.methods.buyProduct(productId).send({ from: account, value: amount })
+    window.location.reload();
   }
 
 
@@ -142,6 +144,7 @@ function App() {
 
     contract.methods.buyProduct(productId).send({ from: account, value: amount })
   }
+
 
   const toggleCircuitBreaker = async (e) => {
     e.preventDefault();
@@ -189,6 +192,7 @@ function App() {
     window.location.reload();
   }
 
+
   return (
     <div className="App">
       <div className="App-header">
@@ -199,12 +203,10 @@ function App() {
       </div>
 
       <h2>Smart Contract Interaction</h2>
-      <p>Connected account: <strong> {accounts} </strong> </p>
-      <p>Current network id: <strong> {networkId} </strong> </p>
-      <p>Marketplace is open: <strong> {String(isActive)} </strong> </p>
-      <p>Products online: <strong> {count} </strong> </p>
-
-
+      <p>Connected account: <b> {accounts} </b> </p>
+      <p>Current network id: <b> {networkId} </b> </p>
+      <p>Marketplace status: <b> {isActive ? 'Open' : 'Closed. Please stand by!'} </b> </p>
+      <p>Products online: <b> {count} </b> </p>
 
       <Box width={[1, 1, 1]} mt={20}>
         <Form onSubmit={handleSubmitAddItem}>
@@ -222,7 +224,7 @@ function App() {
 
       <div>
         <Button size={'medium'} variant="success" onClick={showProducts} mt={20}>
-          Show new products
+          Show latest products
         </Button>
       </div>
 
@@ -231,27 +233,23 @@ function App() {
         <Table>
           <tbody>
             <tr>
-              {productsIndexed.map(e =>
+              {lastProductsObj.map(e =>
                 <td><strong>Id {e.id}</strong></td>
                 )}
             </tr>
             <tr>
-              {productsIndexed.map(e =>
+              {lastProductsObj.map(e =>
                 <td>{e.name}</td>
                 )}
             </tr>
             <tr>
-              {productsIndexed.map(e =>
+              {lastProductsObj.map(e =>
                 <td>{Web3.utils.fromWei(e.price, 'ether')} ETH</td>
                 )}
             </tr>
             <tr>
-              {productsIndexed.map(e =>
-                <td>
-                  <Button size={'medium'}>
-                    Buy {e.index}
-                  </Button>
-                </td>
+              {lastProductsObj.map(e =>
+                <td>{e.state == 0 ? "Available" : "Sold"}</td>
               )}
             </tr>
           </tbody>
