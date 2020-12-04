@@ -27,7 +27,7 @@ The DApp focuses on initial Seller and Buyer actions as well as the transfer of 
 - Note that there are tests both in JavaScript and Solidity
 
 ### To run the client:
-- Navigate to the client folder with `cd client
+- Navigate to the client folder with `cd client`
 - Run `npm install` and then `npm run start`
 - Your browser should open and run the project (otherwise go to localhost:3000)
 
