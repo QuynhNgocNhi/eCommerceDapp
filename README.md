@@ -18,7 +18,7 @@ The DApp focuses on initial Seller and Buyer actions as well as the transfer of 
 - Truffle v5.1.46
 
 ### Setup
-- Clone the repo using `git clone git@github.com:gerwinf/simple-marketplace.git`
+- Clone the repo using `git clone https://github.com/gerwinf/simple-marketplace.git`
 - Have a local blockchain running on port 7545 (e.g. using Ganache)
 - From the project folder, deploy contracts with `truffle migrate --reset`
 
