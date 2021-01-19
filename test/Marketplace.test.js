@@ -1,5 +1,3 @@
-const { Contract } = require("web3-eth-contract");
-
 let BN = web3.utils.BN;
 let Marketplace = artifacts.require('Marketplace');
 
