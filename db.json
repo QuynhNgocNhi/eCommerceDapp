@@ -1,23 +1,34 @@
-[
-  {
-    "id": 0,
-    "description": "My NFT",
-    "external_url": "https://forum.openzeppelin.com/t/create-an-nft-and-deploy-to-a-public-testnet-using-truffle/2961",
-    "image": "https://twemoji.maxcdn.com/svg/1f40e.svg",
-    "name": "My NFT 0"
-  },
-  {
-    "id": 1,
-    "description": "My NFT",
-    "external_url": "https://forum.openzeppelin.com/t/create-an-nft-and-deploy-to-a-public-testnet-using-truffle/2961",
-    "image": "https://twemoji.maxcdn.com/svg/1f40e.svg",
-    "name": "My NFT 1"
-  },
-  {
-    "id": 2,
-    "description": "My NFT",
-    "external_url": "https://forum.openzeppelin.com/t/create-an-nft-and-deploy-to-a-public-testnet-using-truffle/2961",
-    "image": "https://twemoji.maxcdn.com/svg/1f40e.svg",
-    "name": "My NFT 2"
-  }
-]
+{ "guards":
+  [
+    {
+      "id": 0,
+      "description": "Chuck ist meega krass!",
+      "image": "https://i.ytimg.com/vi/d-0yZDN_Ovk/maxresdefault.jpg",
+      "name": "Chuck Norris"
+    },
+    {
+      "id": 1,
+      "description": "bisschen dui der Gute",
+      "image": "https://cdn-a.prisma.de/cdn/img/default/649/6488285_95124ad42c4f411f79de2dddbc691122_480re0.jpg",
+      "name": "Jean Claude Van Damme"
+    },
+    {
+      "id": 2,
+      "description": "Rocky",
+      "image": "https://image.gala.de/20520344/t/w5/v18/w1440/r0.6667/-/sylvester-stallone-cm--8555947-.jpg",
+      "name": "Sylvester Stallone"
+    },
+    {
+      "id": 3,
+      "description": "Arnie",
+      "image": "https://schmusa.de/wp-content/uploads/2020/07/Arnold-Schwarzenegger.jpg",
+      "name": "Arnold Schwarzenegger"
+    },
+    {
+      "id": 4,
+      "description": "Dolph",
+      "image": "https://images.bstatic.de/JTxQJavjFhupqxrL7qcfQ6TeuKI=/1200x680/filters:focal(490x271:510x291)/files/import/2020-06/bild746525_1000x562.jpg",
+      "name": "Dolph Lundgren"
+    }
+  ]
+}
