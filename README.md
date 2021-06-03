@@ -22,7 +22,7 @@ The DApp focuses on initial Seller and Buyer actions as well as the transfer of 
 - Have a local blockchain running on port 7545 (e.g. using Ganache)
 - From the project folder, deploy contracts with `truffle migrate --reset`
 
-### Uint Tests
+### Unit Tests
 - You can run the tests by running truffle test from the Marketplace directory
 - Note that there are tests both in JavaScript and Solidity
 
