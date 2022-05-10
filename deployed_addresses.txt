@@ -1,2 +1,2 @@
-Network: Görli (ID #5)
-Contract Address: 0x82fd2992CEfBd0383617b28f75110b4386a9D6f1
+Network: Ropsten (ID #3)
+Contract Address: 0x235874e5a4Edb7DC3BBa12F6683ce52455C0bEa0

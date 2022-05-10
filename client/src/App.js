@@ -65,16 +65,16 @@ function App() {
     const account = accounts[0];
 
     const productsObj = {
-      MacBookPro: Web3.utils.toWei('2', 'ether'),
-      iPad: Web3.utils.toWei('1', 'ether'),
-      PlayStation: Web3.utils.toWei('2', 'ether'),
-      Sonos: Web3.utils.toWei('3', 'ether')
+      Od01: Web3.utils.toWei('0.2', 'ether'),
+      Od02: Web3.utils.toWei('0.1', 'ether'),
+      Od03: Web3.utils.toWei('0.2', 'ether'),
+      Od04: Web3.utils.toWei('0.3', 'ether')
     }
 
     const productName = Object.keys(productsObj)[Math.floor(Math.random() * Object.keys(productsObj).length)];
     const productPrice = productsObj[productName];
 
-    await contract.methods.addProduct(productName, productPrice).send({from: account});
+    await contract.methods.addProduct(productName, productPrice).send({ from: account });
     // Alternative with gas estimate
     // const gas = await contract.methods.addProduct(productName, productPrice).estimateGas();
     // const post = await contract.methods.addProduct(productName, productPrice).send({
@@ -88,16 +88,23 @@ function App() {
   const showProducts = async (t) => {
     // t.preventDefault();
     const numProducts = await contract.methods.getCount().call();
-    const numShown = 5;
+    const numShown = 3;
     let index = 0;
     productsIndexed.length = 0;
     lastProductsObj.length = 0;
 
-    for (let i = numProducts - 1; i > numProducts - numShown; i--) {
+    for (let i = 0; i < numProducts; i++) {
       const post = await contract.methods.fetchProduct(i).call()
       setlastProductsObj((prevState => [...prevState, post]));
-      index ++
-      productsIndexed.push({index: index, id: post.id, name: post.name, price: post.price})
+      //index++;
+
+      alert('numProducts:' + post);
+      alert('numProducts:' + post.id);
+      alert('numProducts:' + post.name);
+      alert('numProducts:' + post.price);
+      alert('numProducts:' + post.state);
+
+      productsIndexed.push({ index: index, id: post.id, name: post.name, price: post.price, state: post.state })
       // Push post to array
     }
   }
@@ -150,7 +157,7 @@ function App() {
     e.preventDefault();
     alert('Contract will be paused if initiated by owner');
     const account = accounts[0]
-    await contract.methods.toggleCircuitBreaker().send({from: account});
+    await contract.methods.toggleCircuitBreaker().send({ from: account });
     window.location.reload();
   }
 
@@ -194,10 +201,10 @@ function App() {
 
 
   return (
-    <div className="App">
+    <div className="App" style={{ paddingBottom: 200 }}>
       <div className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1>Marketplace DApp</h1>
+        <h1>eCommerce DApp</h1>
         <p>A decentralized marketplace powered by Ethereum</p>
         <MetaMaskButton.Outline size={'medium'} onClick={connectMetamask}>Connect with MetaMask</MetaMaskButton.Outline>
       </div>
@@ -217,49 +224,60 @@ function App() {
       </Box>
 
       <div>
-        <Button size={'medium'} onClick={addItem} mt={20}>
-          Add random product
+        <Button size={'medium'} variant="danger" onClick={addItem} mt={20}>
+          Add random Order
         </Button>
       </div>
 
       <div>
         <Button size={'medium'} variant="success" onClick={showProducts} mt={20}>
-          Show latest products
+          Show latest transactions
         </Button>
       </div>
 
       <Box /* bg="grey" */ color="white" fontSize={4} p={4}>
 
         <Table>
+          <caption>Council budget (in £) 2018</caption>
+          <thead>
+            <tr>
+              <th scope="col">Transactions</th>
+
+            </tr>
+          </thead>
           <tbody>
             <tr>
+              <th scope="row">ID</th>
               {lastProductsObj.map(e =>
                 <td><strong>Id {e.id}</strong></td>
-                )}
+              )}
             </tr>
             <tr>
+              <th scope="row">Name</th>
               {lastProductsObj.map(e =>
                 <td>{e.name}</td>
-                )}
+              )}
             </tr>
             <tr>
+              <th scope="row">Amount</th>
               {lastProductsObj.map(e =>
                 <td>{Web3.utils.fromWei(e.price, 'ether')} ETH</td>
-                )}
+              )}
             </tr>
             <tr>
+              <th scope="row">Status</th>
               {lastProductsObj.map(e =>
-                <td>{e.state == 0 ? "Available" : "Sold"}</td>
+                <td>{e.state === '0' ? "Available" : "Sold"}</td>
               )}
             </tr>
           </tbody>
         </Table>
 
-          <Form onSubmit={handleSubmitBuyItem}>
-            <Input type="text" placeholder="Enter product id" value={inputId} onChange={handleInputId} required={true} />
-            <Input type="text" placeholder="Enter amount in ETH" value={inputAmount} onChange={handleInputAmount} required={true} />
-            <Input type="submit" value="Buy selected product" color="blue"/>
-          </Form>
+        <Form onSubmit={handleSubmitBuyItem}>
+          <Input type="text" placeholder="Enter product id" value={inputId} onChange={handleInputId} required={true} />
+          <Input type="text" placeholder="Enter amount in ETH" value={inputAmount} onChange={handleInputAmount} required={true} />
+          <Input type="submit" value="Buy selected product" color="blue" />
+        </Form>
 
       </Box>
 
@@ -284,7 +302,7 @@ function App() {
       </Box>
 
     </div>
-    );
+  );
 }
 
 export default App;

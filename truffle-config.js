@@ -5,9 +5,8 @@ dotenv.config();
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const infuraKey = process.env.INFURA_KEY;
-
-const mnemonic = process.env.MNEMONIC_KEY;
+MNENOMIC = "defy doctor situate young cigar onion know banner sign bench jazz feel";
+INFURA_API_KEY = "330029b4b3db43a0a763d11f3f29337e";
 
 
 module.exports = {
@@ -21,14 +20,14 @@ module.exports = {
   contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
     develop: {
-      host: "127.0.0.1",
-      port: 7545,
-      network_id: 5777
+      host: "127.0.0.1", // Localhost (default: none)
+      port: 7545, // Standard Ethereum port (default: none)
+      network_id: '*'// Any network (default: none)
     },
-    görli: {
-      provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraKey}`),
-      network_id: 5,       // Görli's id
-      gas: 5500000,
+    ropsten: {
+      provider: () => new HDWalletProvider(MNENOMIC, `https://ropsten.infura.io/v3/${INFURA_API_KEY}`),
+      network_id: 3,
+      gas: 4612388
     },
   }
 };
