@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Form, Input, Button, Flex, MetaMaskButton, Table, Card, Heading, Text } from "rimble-ui";
 import logo from './logo.png';
 import './App.css';
+import CustomSwitch from "./component/CustomSwitch";
 import Web3 from "web3";
 import getWeb3 from "./getWeb3";
 import MarketplaceContract from "./contracts/Marketplace.json";
@@ -98,11 +99,7 @@ function App() {
       setlastProductsObj((prevState => [...prevState, post]));
       //index++;
 
-      alert('numProducts:' + post);
-      alert('numProducts:' + post.id);
-      alert('numProducts:' + post.name);
-      alert('numProducts:' + post.price);
-      alert('numProducts:' + post.state);
+
 
       productsIndexed.push({ index: index, id: post.id, name: post.name, price: post.price, state: post.state })
       // Push post to array
@@ -155,7 +152,7 @@ function App() {
 
   const toggleCircuitBreaker = async (e) => {
     e.preventDefault();
-    alert('Contract will be paused if initiated by owner');
+    alert('Contract will be paused/opened if initiated by owner');
     const account = accounts[0]
     await contract.methods.toggleCircuitBreaker().send({ from: account });
     window.location.reload();
@@ -199,52 +196,108 @@ function App() {
     window.location.reload();
   }
 
-
+  const [PostTab, setPostTab] = useState(1);
+  const onSelectSwitch = value => {
+    setPostTab(value);
+  };
   return (
-    <div className="App" style={{ paddingBottom: 200 }}>
+    <div className="App" style={{ paddingBottom: 50 }}>
+      {/* <Box width={[1, 2, 0.2]} mt={20}>
+        <Card width={"auto"} maxWidth={"420px"} mx={"auto"} px={[3, 3, 4]}>
+          <Heading>Admin Functions</Heading>
+
+          <Box>
+            <Text mb={4}>
+              Only accessible to the owner of the smart contract. Use with care!
+            </Text>
+          </Box>
+
+          <Button variant="danger" onClick={toggleCircuitBreaker} width={[1, "auto", "auto"]} mr={3}>
+            Pause
+          </Button>
+
+          <Button.Outline variant="danger" onClick={killSwitch} width={[1, "auto", "auto"]} mt={[2, 0, 0]}>
+            Kill
+          </Button.Outline>
+        </Card>
+      </Box> */}
       <div className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <h1>eCommerce DApp</h1>
-        <p>A decentralized marketplace powered by Ethereum</p>
-        <MetaMaskButton.Outline size={'medium'} onClick={connectMetamask}>Connect with MetaMask</MetaMaskButton.Outline>
+        <p>A decentralized Order Payment powered by Ethereum</p>
+        <Box width={[1, 1]} mt={20}>
+
+          <Button style={{ height: 40, marginLeft: 10 }} variant="danger" onClick={toggleCircuitBreaker} width={[1, "auto", "auto"]} mr={3}>
+            {isActive ? 'Pause' : 'Open'}
+          </Button>
+
+          <Button style={{ height: 40, marginLeft: 10 }} variant="success" onClick={killSwitch} width={[1, "auto", "auto"]} mt={[2, 0, 0]}>
+            Kill
+          </Button>
+        </Box>
+        <MetaMaskButton.Outline style={{ marginTop: 20, height: 50 }} size={'medium'} onClick={connectMetamask}>Connect with MetaMask</MetaMaskButton.Outline>
+        <CustomSwitch
+          selectionMode={1}
+          option1="Create Order"
+          option2="Pay my Order"
+
+          onSelectSwitch={onSelectSwitch}
+        />
       </div>
 
-      <h2>Smart Contract Interaction</h2>
-      <p>Connected account: <b> {accounts} </b> </p>
       <p>Current network id: <b> {networkId} </b> </p>
-      <p>Marketplace status: <b> {isActive ? 'Open' : 'Closed. Please stand by!'} </b> </p>
-      <p>Products online: <b> {count} </b> </p>
+      <p>Playground status: <b> {isActive ? 'Open' : 'Closed. Please stand by!'} </b> </p>
+      <p>Transactions online: <b> {count} </b> </p>
+      <p>Connected account: <b> {accounts} </b> </p>
 
-      <Box width={[1, 1, 1]} mt={20}>
-        <Form onSubmit={handleSubmitAddItem}>
-          <Input type="text" placeholder="Enter product name" value={inputName} onChange={handleInputName} required={true} />
-          <Input type="text" placeholder="Enter price in ETH" value={inputPrice} onChange={handleInputPrice} required={true} />
-          <Input type="submit" value="Add custom product" color="green" />
-        </Form>
-      </Box>
 
-      <div>
+      {/*  <div>
         <Button size={'medium'} variant="danger" onClick={addItem} mt={20}>
-          Add random Order
+        Add random Order
         </Button>
-      </div>
+      </div> */}
+      {PostTab == 1 &&
+        (<Box width={[1, 1, 1]} mt={20}>
+          <Form onSubmit={handleSubmitAddItem}>
+            <Input style={{ height: 50, marginLeft: 10 }} type="text" placeholder="Enter Order name" value={inputName} onChange={handleInputName} required={true} />
+            <Input style={{ height: 50, marginLeft: 10 }} type="text" placeholder="Enter amount in ETH" value={inputPrice} onChange={handleInputPrice} required={true} />
+            <Input style={{ cursor: 'pointer', height: 50, marginLeft: 10, backgroundColor: "#28C081", width: 200 }} type="submit" value="Add custom Order" color="white" />
+          </Form>
+        </Box>)}
+      {PostTab == 2 &&
+        (<Form style={{ marginTop: 20 }} onSubmit={handleSubmitBuyItem}>
+          <Input style={{ height: 50, marginLeft: 10 }} type="text" placeholder="Enter Order ID" value={inputId} onChange={handleInputId} required={true} />
+          <Input style={{ height: 50, marginLeft: 10 }} type="text" placeholder="Enter amount in ETH" value={inputAmount} onChange={handleInputAmount} required={true} />
+          <Input style={{ cursor: 'pointer', height: 50, marginLeft: 10, backgroundColor: "#DC2C10", width: 200 }} className="form-button" type="submit" value="Pay order" color="white" background="black" />
+        </Form>)}
+      <div className="App-content-button" style={{ marginTop: 40, display: 'flex', justifyContent: 'center', }}>
 
-      <div>
-        <Button size={'medium'} variant="success" onClick={showProducts} mt={20}>
-          Show latest transactions
-        </Button>
+        <Card
+          className="Content-button"
+          onClick={showProducts}
+          style={{
+            borderRadius: 5,
+            cursor: 'pointer',
+            borderWidth: 2,
+            borderColor: '#000000',
+            padding: 10,
+            height: 50,
+            width: 300,
+            fontSize: 18,
+            color: 'white',
+            justifyContent: 'space-between',
+            backgroundColor: "#000000",
+
+
+            alignItems: 'center',
+          }}
+        > Show latest transactions</Card>
       </div>
 
       <Box /* bg="grey" */ color="white" fontSize={4} p={4}>
 
         <Table>
-          <caption>Council budget (in £) 2018</caption>
-          <thead>
-            <tr>
-              <th scope="col">Transactions</th>
 
-            </tr>
-          </thead>
           <tbody>
             <tr>
               <th scope="row">ID</th>
@@ -273,15 +326,11 @@ function App() {
           </tbody>
         </Table>
 
-        <Form onSubmit={handleSubmitBuyItem}>
-          <Input type="text" placeholder="Enter product id" value={inputId} onChange={handleInputId} required={true} />
-          <Input type="text" placeholder="Enter amount in ETH" value={inputAmount} onChange={handleInputAmount} required={true} />
-          <Input type="submit" value="Buy selected product" color="blue" />
-        </Form>
+
 
       </Box>
 
-      <Box width={[1, 2, 0.2]} mt={20}>
+      {/* <Box width={[1, 2, 0.2]} mt={20}>
         <Card width={"auto"} maxWidth={"420px"} mx={"auto"} px={[3, 3, 4]}>
           <Heading>Admin Functions</Heading>
 
@@ -299,9 +348,9 @@ function App() {
             Kill
           </Button.Outline>
         </Card>
-      </Box>
+      </Box> */}
 
-    </div>
+    </div >
   );
 }
 
