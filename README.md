@@ -18,7 +18,7 @@ For the company and the client, this DApp focuses on actions related to creating
 - Truffle development framework for Ethereum
 
 ## Implementation
-![Logo](./client//public/demo.png)
+![Logo](./client//public/demo2.png)
 
 ## Design
 
