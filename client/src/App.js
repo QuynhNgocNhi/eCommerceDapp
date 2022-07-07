@@ -53,7 +53,7 @@ function App() {
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
-          `Failed to load web3, accounts, or contract. Be sure to be on network id 5 or 5777.`,
+          `Failed to load web3, accounts, or contract. Be sure to be on network id 3 (Ropsten) or 5777(Ganache).`,
         );
         console.error(error);
       }
@@ -89,7 +89,7 @@ function App() {
   const showProducts = async (t) => {
     // t.preventDefault();
     const numProducts = await contract.methods.getCount().call();
-    const numShown = 3;
+    //const numShown = 3;
     let index = 0;
     productsIndexed.length = 0;
     lastProductsObj.length = 0;
@@ -98,16 +98,13 @@ function App() {
       const post = await contract.methods.fetchProduct(i).call()
       setlastProductsObj((prevState => [...prevState, post]));
       //index++;
-
-
-
       productsIndexed.push({ index: index, id: post.id, name: post.name, price: post.price, state: post.state })
       // Push post to array
     }
   }
 
   const handleSubmitAddItem = async (e) => {
-    alert('A product was added: ' + inputName + inputPrice);
+    alert('An item was added: ' + 'Order Name: ' + inputName + ' Order amount:' + inputPrice);
 
     e.preventDefault();
     const account = accounts[0]
@@ -125,7 +122,7 @@ function App() {
   }
 
   const handleSubmitBuyItem = async e => {
-    alert('Id of product to be purchased: ' + inputId);
+    alert('Id of Order to be Paid: ' + inputId);
     e.preventDefault();
     const account = accounts[0]
 
