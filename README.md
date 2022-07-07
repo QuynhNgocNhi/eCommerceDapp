@@ -8,6 +8,9 @@ This new version
 This project seeks to emulate the essential features of an Ethereum blockchain-based decentralized order payment system.
 For the company and the client, this DApp focuses on actions related to creating and paying orders. For demonstration reasons, administrative tasks are included, which obstructs true decentralization.
 
+## Demo screens
+![Logo](./client//public/demo1.png)
+
 ## Technology
 
 - Smart contracts for business logic (adding products, buying products, transfer of funds) written in Solidity
@@ -15,6 +18,11 @@ For the company and the client, this DApp focuses on actions related to creating
 - Truffle development framework for Ethereum
 
 ## Implementation
+![Logo](./client//public/demo1.png)
+
+## Design
+
+[Figma](https://www.figma.com/community/file/1125969377350002819)
 
 ### Prerequisites
 
